@@ -130,6 +130,43 @@ public class DBConnectionTest2Test{
     }
 
     @Test
+    public void transactionTest() throws Exception{
+        int rowCnt = 0; //insert, delete, update
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            deleteAll();
+            conn = ds.getConnection();
+            conn.setAutoCommit(false); // default는 true상태
+
+            String sql =
+                    //"insert into user_info values ('ownf12','efffs3','kitty','snlef@naver.com','1980-05-07','facebook',now())";
+                    "insert into user_info values (?,?,?,?,?,?,now())";
+
+            pstmt = conn.prepareStatement(sql); //sql Injection 공격, 성능향상
+            pstmt.setString(1,"asdf");
+            pstmt.setString(2,"1234");
+            pstmt.setString(3,"abc");
+            pstmt.setString(4,"aaa@aaa.com");
+            pstmt.setDate(5,new java.sql.Date(new Date().getTime()));
+            pstmt.setString(6,"fb");
+
+            rowCnt = pstmt.executeUpdate();
+            pstmt.setString(1,"asdf");
+            rowCnt = pstmt.executeUpdate();
+            conn.commit();
+
+        } catch (Exception e) {
+            conn.rollback();
+            e.printStackTrace();
+        } finally {
+            if(pstmt!=null) pstmt.close();
+            if(conn!=null) conn.close();
+        }
+
+    }
+
+    @Test
     public void main() throws Exception{
 //        ApplicationContext ac = new GenericXmlApplicationContext("file:src/main/webapp/WEB-INF/spring/**/root-context.xml");
 //        DataSource ds = ac.getBean(DataSource.class);

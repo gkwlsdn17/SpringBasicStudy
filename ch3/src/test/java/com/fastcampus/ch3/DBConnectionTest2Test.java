@@ -10,6 +10,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -19,6 +23,111 @@ public class DBConnectionTest2Test{
 
     @Autowired
     DataSource ds;
+
+    @Test
+    public void insertUserTest() throws Exception {
+        User user = new User("ownf12","efffs3","kitty","snlef@naver.com",new Date(), "fb", new Date());
+        deleteAll();
+        int rowCnt = insertUser(user);
+        assertTrue(rowCnt==1);
+    }
+
+    @Test
+    public void selectUserTest() throws Exception{
+        User user = new User("ownf12","efffs3","kitty","snlef@naver.com",new Date(), "fb", new Date());
+        deleteAll();
+        int rowCnt = insertUser(user);
+        User user2 = selectUser("ownf12");
+        assertTrue(user2.getId().equals("ownf12"));
+    }
+
+    @Test
+    public void deleteUserTest() throws Exception{
+        deleteAll();
+        assertTrue(deleteUser("ownf12") == 0);
+
+        User user = new User("ownf12","efffs3","kitty","snlef@naver.com",new Date(), "fb", new Date());
+        assertTrue(insertUser(user)==1);
+        assertTrue(deleteUser(user.getId())==1);
+        assertTrue(selectUser(user.getId())==null);
+
+    }
+
+    @Test
+    public void updateUserTest() throws Exception{
+        User user = new User("ownf12","11223344","kitty","skef@abcd.com",new Date(), "twitter", new Date());
+        assertTrue(updateUser(user)==1);
+    }
+
+    private int updateUser(User user) throws Exception{
+        Connection conn = ds.getConnection();
+        String sql = "update user_info set pwd = ?, name = ?, email = ?, birth = ?, sns = ? where id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1,user.getPwd());
+        pstmt.setString(2,user.getName());
+        pstmt.setString(3,user.getEmail());
+        pstmt.setDate(4,new java.sql.Date(user.getBirth().getTime()));
+        pstmt.setString(5,user.getSns());
+        pstmt.setString(6,user.getId());
+        return pstmt.executeUpdate();
+    }
+
+    private User selectUser(String id) throws Exception {
+        Connection conn = ds.getConnection();
+        String sql = "select * from user_info where id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1,id);
+        ResultSet rs = pstmt.executeQuery(); // select
+        if(rs.next()){
+            User user = new User();
+            user.setId(rs.getString(1));
+            user.setPwd(rs.getString(2));
+            user.setName(rs.getString(3));
+            user.setEmail(rs.getString(4));
+            user.setBirth(new Date(rs.getDate(5).getTime()));
+            user.setSns(rs.getString(6));
+            user.setReg_date(new Date(rs.getDate(7).getTime()));
+
+            return user;
+        }
+        return null;
+    }
+
+    private void deleteAll() throws SQLException {
+        Connection conn = ds.getConnection();
+        String sql = "delete from user_info";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.executeUpdate();
+    }
+
+    private int deleteUser(String id) throws Exception{
+        Connection conn = ds.getConnection();
+        String sql = "delete from user_info where id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, id);
+        int rowCnt = pstmt.executeUpdate();
+        return rowCnt;
+    }
+    //사용자 정보를 user_info테이블에 저장하는 메서드
+    public int insertUser(User user) throws Exception{
+        Connection conn = ds.getConnection();
+
+        String sql =
+                //"insert into user_info values ('ownf12','efffs3','kitty','snlef@naver.com','1980-05-07','facebook',now())";
+                "insert into user_info values (?,?,?,?,?,?,now())";
+
+        PreparedStatement pstmt = conn.prepareStatement(sql); //sql Injection 공격, 성능향상
+        pstmt.setString(1,user.getId());
+        pstmt.setString(2,user.getPwd());
+        pstmt.setString(3,user.getName());
+        pstmt.setString(4,user.getEmail());
+        pstmt.setDate(5,new java.sql.Date(user.getBirth().getTime()));
+        pstmt.setString(6,user.getSns());
+
+        int rowCnt = pstmt.executeUpdate(); //insert, delete, update
+
+        return rowCnt;
+    }
 
     @Test
     public void main() throws Exception{

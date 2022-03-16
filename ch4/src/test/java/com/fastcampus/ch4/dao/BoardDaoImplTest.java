@@ -21,6 +21,15 @@ public class BoardDaoImplTest {
     BoardDao boardDao;
 
     @Test
+    public void insertTestData() throws Exception {
+        boardDao.deleteAll();
+        for(int i=1;i<220;i++){
+            BoardDto dto = new BoardDto("title"+1, "no content", "asdf");
+            boardDao.insert(dto);
+        }
+    }
+
+    @Test
     public void select() throws Exception {
         assertTrue(boardDao!=null);
         System.out.println("boardDao = " + boardDao);

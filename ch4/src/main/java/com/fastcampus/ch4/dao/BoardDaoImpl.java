@@ -1,6 +1,7 @@
 package com.fastcampus.ch4.dao;
 
 import com.fastcampus.ch4.domain.BoardDto;
+import com.fastcampus.ch4.domain.SearchCondition;
 import com.fastcampus.ch4.domain.User;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,16 @@ public class BoardDaoImpl implements BoardDao {
     @Override
     public int increaseViewCnt(Integer bno) throws Exception {
         return session.update(namespace+"increaseViewCnt",bno);
+    }
+
+
+    @Override
+    public List<BoardDto> searchSelectPage(SearchCondition sc) throws Exception{
+        return session.selectList(namespace+"searchSelectPage",sc);
+    }
+
+    @Override
+    public int searchResultCnt(SearchCondition sc) throws Exception{
+        return session.selectOne(namespace+"searchResultCnt",sc);
     }
 }

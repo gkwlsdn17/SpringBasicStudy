@@ -1,6 +1,7 @@
 package com.fastcampus.ch4.dao;
 
 import com.fastcampus.ch4.domain.BoardDto;
+import com.fastcampus.ch4.domain.SearchCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,30 @@ public class BoardDaoImplTest {
 
     @Autowired
     BoardDao boardDao;
+
+    @Test
+    public void searchSelectPageTest() throws Exception{
+        boardDao.deleteAll();
+        for(int i=1;i<=20;i++){
+            boardDao.insert(new BoardDto("title"+i, i+"번째 내용", "asdf"));
+        }
+        SearchCondition sc = new SearchCondition(1,10,"title2","T");
+        List<BoardDto> list = boardDao.searchSelectPage(sc);
+        System.out.println("list = " + list);
+        assertTrue(list.size()==2);
+    }
+
+    @Test
+    public void searchResultCnt() throws Exception{
+        boardDao.deleteAll();
+        for(int i=1;i<=20;i++){
+            boardDao.insert(new BoardDto("title"+i, i+"번째 내용", "asdf"));
+        }
+        SearchCondition sc = new SearchCondition(1,10,"title2","T");
+        int cnt = boardDao.searchResultCnt(sc);
+        System.out.println("cnt = " + cnt);
+        assertTrue(cnt==2);
+    }
 
     @Test
     public void insertTestData() throws Exception {

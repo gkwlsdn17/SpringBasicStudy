@@ -64,4 +64,22 @@
         delete from board where bno = #{bno}
     </delete>
 
+    <select id="searchSelectPage" parameterType="SearchCondition" resultType="BoardDto">
+        select bno, title, content, writer, view_cnt, comment_cnt, reg_date
+        from board
+        where true
+        and title like concat('%',#{keyword},'%')
+        order by reg_date desc, bno desc
+            limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="searchResultCnt" parameterType="SearchCondition" resultType="int">
+        select count(*)
+        from board
+        where true
+          and title like concat('%',#{keyword},'%')
+        order by reg_date desc, bno desc
+            limit #{offset}, #{pageSize}
+    </select>
+
 </mapper>

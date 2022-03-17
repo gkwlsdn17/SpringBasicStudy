@@ -1,6 +1,7 @@
 package com.fastcampus.ch4.dao;
 
 import com.fastcampus.ch4.domain.BoardDto;
+import com.fastcampus.ch4.domain.SearchCondition;
 import com.fastcampus.ch4.domain.User;
 
 import java.util.List;
@@ -16,5 +17,6 @@ public interface BoardDao {
     int delete(Integer bno, String writer) throws Exception;
     void deleteAll() throws Exception;
     int increaseViewCnt(Integer bno) throws Exception;
-
+    List<BoardDto> searchSelectPage(SearchCondition sc) throws Exception;
+    int searchResultCnt(SearchCondition sc) throws Exception;
 }

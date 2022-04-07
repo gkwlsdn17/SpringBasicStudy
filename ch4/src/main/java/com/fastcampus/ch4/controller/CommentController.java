@@ -98,4 +98,16 @@ public class CommentController {
 		}
 		
 	}
+	
+	public List<CommentDto> getCommentList(Integer bno){
+		List<CommentDto> list = null;
+		try {
+			list = service.getList(bno);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
 }

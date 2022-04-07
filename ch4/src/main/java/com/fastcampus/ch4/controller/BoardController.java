@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.fastcampus.ch4.domain.BoardDto;
+import com.fastcampus.ch4.domain.CommentDto;
 import com.fastcampus.ch4.domain.PageHandler;
 import com.fastcampus.ch4.domain.SearchCondition;
 import com.fastcampus.ch4.service.BoardService;
@@ -27,6 +28,9 @@ import java.util.Map;
 public class BoardController {
     @Autowired
     BoardService boardService;
+    
+    @Autowired
+    CommentController commentController;
 
     @GetMapping("/write")
     public String write(Model m){
@@ -101,14 +105,21 @@ public class BoardController {
     }
 
     @GetMapping("/read")
-    public String read(Integer bno, Integer page, Integer pageSize, Model m, RedirectAttributes rattr){
+    public String read(Integer bno, Integer page, Integer pageSize, Integer commentPage, Integer commentPageSize, Model m, RedirectAttributes rattr){
         try {
             BoardDto boardDto = boardService.read(bno);
 
             if(boardDto == null)
                 throw new Exception("board read error");
+            
+
+            List<CommentDto> commentList = commentController.getCommentList(bno);
+            
+            if(commentList == null)
+            	throw new Exception("comment read error");
 
             m.addAttribute(boardDto);
+            m.addAttribute("commentList",commentList);
             m.addAttribute("page",page);
             m.addAttribute("pageSize",pageSize);
         } catch (Exception e) {

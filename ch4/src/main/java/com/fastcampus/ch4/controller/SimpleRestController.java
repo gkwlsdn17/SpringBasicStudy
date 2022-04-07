@@ -5,13 +5,18 @@ import org.springframework.web.bind.annotation.*;
 
 //사용하려면 Maven Dependency에서 Jackson Databind 추가 필요
 
-//@Controller
-@RestController
+@Controller
+//@RestController
 public class SimpleRestController {
 //    @GetMapping("/ajax")
 //    public String ajax() {
 //        return "ajax";
 //    }
+	
+  @GetMapping("/test")
+  public String ajax() {
+      return "test";
+  }
 
     @PostMapping("/send")
 //    @ResponseBody

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mysql.Mapper">
+	<sql id="selectEmployeeBaseSql">
+		SELECT e.eno,
+		e.name,
+		e.number,
+		t.name as team,
+		p.name as position,
+		e.startdate
+		FROM employee e LEFT JOIN position p ON e.position = p.pno
+		LEFT JOIN team t ON e.team = t.tno
+		
+	</sql>
+	<select id="selectEmployee" parameterType="int" resultType="Employee">
+		<include refid="selectEmployeeBaseSql"></include>
+		ORDER BY eno DESC;
+	</select>
+	
+</mapper>

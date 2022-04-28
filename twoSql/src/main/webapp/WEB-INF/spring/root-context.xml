@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<context:property-placeholder location="classpath:config/*.properties"/>
+	
+	<bean id="dataSourceMySQL" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="${mysql.url}"></property>
+		<property name="username" value="${mysql.username}"></property>
+		<property name="password" value="${mysql.password}"></property>
+	</bean>
+	
+	<bean id="dataSourceMsSQL" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"></property>
+		<property name="url" value="${mssql.url}"></property>
+		<property name="username" value="${mssql.username}"></property>
+		<property name="password" value="${mssql.password}"></property>
+	</bean>
+
+	<bean id="mysqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceMySQL"/>
+		<property name="configLocation"  value="classpath:config/mysql-mybatis-config.xml"/>
+		<property name="mapperLocations" value="classpath:mapper/mysql/**/*.xml"/>
+	</bean>
+	
+	<bean id="mssqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceMsSQL"/>
+		<property name="configLocation"  value="classpath:config/mssql-mybatis-config.xml"/>
+		<property name="mapperLocations" value="classpath:mapper/mssql/**/*.xml"/>
+	</bean>
+
+	<bean id="mysqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="mysqlSessionFactory"/>
+	</bean>
+	
+	<bean id="mssqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="mssqlSessionFactory"/>
+	</bean>
+
+	<bean id="mysqlTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceMySQL"/>
+	</bean>
+	
+	<bean id="mssqlTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceMsSQL"/>
+	</bean>
+	
+	<tx:annotation-driven/>
+		
+</beans>
